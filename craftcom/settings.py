@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from datetime import timedelta
+import os
  
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -16,7 +17,7 @@ SECRET_KEY = 'django-insecure-3i)exqzjygr+=7321_5hc(ipbna$=8vk5mxr$)ohj_-!gp-mt8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -84,11 +85,11 @@ WSGI_APPLICATION = 'craftcom.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'craftcom',
-        'HOST': 'localhost',
-        'PORT': 5432
+        'NAME': BASE_DIR / "db.sqlite3",
     }
 }
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Password validation
@@ -128,6 +129,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
