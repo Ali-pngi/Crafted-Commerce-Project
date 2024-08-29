@@ -3,7 +3,7 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .models import Offer
-from .serializers import OfferSerializer
+from ..jwt_auth import OfferSerializer
 from jwt_auth.permissions import IsAdminOrReadOnly  
 
 class OfferViewSet(viewsets.ModelViewSet):
