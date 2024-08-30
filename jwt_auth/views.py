@@ -7,10 +7,10 @@ from utils.decorators import handle_exceptions
 
 User = get_user_model()
 
-# SignUp View
+
 class SignUpView(APIView):
 
-    # Create user
+    
     @handle_exceptions
     def post(self, request):
         user_to_create = UserSerializer(data=request.data)
@@ -20,20 +20,20 @@ class SignUpView(APIView):
         return Response(user_to_create.errors, 400)
     
 
-# SignIn View
+
 class SignInView(APIView):
 
     @handle_exceptions
     def post(self, request):
-        # Extract username and password from the request
+        
         username = request.data.get('username')
         password = request.data.get('password')
 
-        # Authenticate the user
+        
         user = authenticate(username=username, password=password)
 
         if user is not None:
-            # Generate JWT tokens
+            
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),

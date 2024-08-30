@@ -2,22 +2,25 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from cloudinary_storage.storage import MediaCloudinaryStorage
+from cloudinary_storage.storage import RawMediaCloudinaryStorage
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv()  # Load environment variables from .env file
+load_dotenv()  
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 
-# For development, allow requests from localhost and frontend port
-ALLOWED_HOSTS = ['*']
 
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-# CORS settings
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',  # Replace with your frontend URL
+    'http://localhost:5173',  
 ]
 
 INSTALLED_APPS = [
@@ -33,6 +36,8 @@ INSTALLED_APPS = [
     'offers', 
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 REST_FRAMEWORK = {
@@ -85,7 +90,14 @@ DATABASES = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET')
+)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -115,3 +127,5 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
