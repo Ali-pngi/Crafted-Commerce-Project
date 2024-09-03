@@ -6,12 +6,9 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/products/', include('products.urls')),  
-    path('api/auth/', include('jwt_auth.urls')), 
+    path('api/auth/', include('jwt_auth.urls')),
+    path('api/watchlist/', include('watchlist.urls')),  # Include the watchlist URLs
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-
-    

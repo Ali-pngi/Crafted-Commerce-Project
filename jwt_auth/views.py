@@ -56,3 +56,5 @@ def check_email(request):
         return Response({'available': False}, status=status.HTTP_200_OK)
     else:
         return Response({'available': True}, status=status.HTTP_200_OK)
+
+
