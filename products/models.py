@@ -1,5 +1,3 @@
-# products/models.py
-
 from django.db import models
 from django.conf import settings
 
@@ -32,14 +30,14 @@ class ProductImage(models.Model):
 
 class Watchlist(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE, 
-        related_name='watchlist_items'
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='watchlist_products'  
     )
     product = models.ForeignKey(
-        Product, 
-        on_delete=models.CASCADE, 
-        related_name='watchlist_entries'
+        Product,
+        on_delete=models.CASCADE,
+        related_name='watchlist_entries_product'  
     )
     added_at = models.DateTimeField(auto_now_add=True)
 

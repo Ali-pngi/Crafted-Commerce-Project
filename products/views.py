@@ -1,42 +1,42 @@
-from rest_framework import viewsets, permissions
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from .models import Watchlist, Product
-from .serializers import WatchlistSerializer, ProductSerializer, ProductPreviewSerializer
-
-class WatchlistViewSet(viewsets.ViewSet):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def list(self, request):
-        user = request.user
-        watchlist = Watchlist.objects.filter(user=user)
-        serializer = WatchlistSerializer(watchlist, many=True)
-        return Response(serializer.data)
-
-    def create(self, request):
-        serializer = WatchlistSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-
-    def destroy(self, request, pk=None):
-        try:
-            watchlist_item = Watchlist.objects.get(pk=pk, user=request.user)
-            watchlist_item.delete()
-            return Response(status=204)
-        except Watchlist.DoesNotExist:
-            return Response(status=404)
+from .models import Product, ProductImage
+from watchlist.models import WatchlistItem
+from .serializers import ProductSerializer, WatchlistItemSerializer
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]  # Adjust as needed
-
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return ProductPreviewSerializer
-        return ProductSerializer
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save()
+        serializer.save(owner=self.request.user)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def add_to_watchlist(self, request, pk=None):
+        product = get_object_or_404(Product, pk=pk)
+        watchlist_item, created = WatchlistItem.objects.get_or_create(user=request.user, product=product)
+
+        if created:
+            return Response({'status': 'Product added to watchlist'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'status': 'Product already in watchlist'}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def remove_from_watchlist(self, request, pk=None):
+        product = get_object_or_404(Product, pk=pk)
+        try:
+            watchlist_item = WatchlistItem.objects.get(user=request.user, product=product)
+            watchlist_item.delete()
+            return Response({'status': 'Product removed from watchlist'}, status=status.HTTP_204_NO_CONTENT)
+        except WatchlistItem.DoesNotExist:
+            return Response({'error': 'Product not in watchlist'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def watchlist(self, request):
+        watchlist_items = WatchlistItem.objects.filter(user=request.user)
+        serializer = WatchlistItemSerializer(watchlist_items, many=True)
+        return Response(serializer.data)
 
