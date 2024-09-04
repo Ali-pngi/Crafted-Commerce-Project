@@ -5,5 +5,6 @@ class CustomObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['username'] = user.username
-        token['profile_image'] = user.profile_image
+        token['is_superuser'] = user.is_superuser
+        
         return token

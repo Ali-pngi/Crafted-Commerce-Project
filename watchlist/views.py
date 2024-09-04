@@ -1,5 +1,3 @@
-# watchlist/views.py
-
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -27,12 +25,24 @@ class ToggleWatchlistView(APIView):
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        
         watchlist_item, created = WatchlistItem.objects.get_or_create(user=request.user, product=product)
 
         if not created:
             watchlist_item.delete()
             return Response({"message": "Removed from watchlist"}, status=status.HTTP_200_OK)
         
-        
         return Response({"message": "Added to watchlist"}, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, product_id):
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        watchlist_item = WatchlistItem.objects.filter(user=request.user, product=product).first()
+
+        if watchlist_item:
+            watchlist_item.delete()
+            return Response({"message": "Removed from watchlist"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Watchlist item not found"}, status=status.HTTP_404_NOT_FOUND)

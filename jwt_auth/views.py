@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .serializers import UserSerializer
-from django.contrib.auth.models import User
+from .models import User  
 
 class SignUpView(APIView):
     def post(self, request):
@@ -29,7 +29,8 @@ class SignInView(APIView):
             refresh = RefreshToken.for_user(user)
             return Response({
                 'access': str(refresh.access_token),
-                'refresh': str(refresh)
+                'refresh': str(refresh),
+                'is_superuser': user.is_superuser  # Include is_superuser in response
             }, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -56,5 +57,3 @@ def check_email(request):
         return Response({'available': False}, status=status.HTTP_200_OK)
     else:
         return Response({'available': True}, status=status.HTTP_200_OK)
-
-
