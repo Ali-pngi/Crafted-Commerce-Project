@@ -3,15 +3,23 @@
 from rest_framework import serializers
 from .models import Product, ProductImage
 from watchlist.models import WatchlistItem
-
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductImage
-        fields = ['id', 'image', 'uploaded_at']
+        fields = ['id', 'image_url', 'uploaded_at']
+
+    def get_image_url(self, obj):
+        # Return the full URL for the image
+        request = self.context.get('request')
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return None
 
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)

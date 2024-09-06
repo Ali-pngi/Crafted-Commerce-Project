@@ -1,5 +1,4 @@
 # jwt_auth/urls.py
-
 from django.urls import path
 from .views import SignUpView, SignInView, check_username, check_email
 
