@@ -9,7 +9,7 @@ class User(AbstractUser):
     username = models.TextField(unique=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    watchlist = models.ManyToManyField(Product, related_name='watched_by_users')
+    
 
     def __str__(self):
         return self.username
