@@ -10,31 +10,28 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     password_confirmation = serializers.CharField(write_only=True)
 
-    def validate(self, data):
-        password = data.get('password')
-        password_confirmation = data.pop('password_confirmation', None)
-
-        if password != password_confirmation:
-            raise serializers.ValidationError({'password_confirmation': 'Passwords do not match.'})
-
-        try:
-            password_validation.validate_password(password=password)
-        except DjangoValidationError as e:
-            raise serializers.ValidationError({'password': list(e.messages)})
-
-        data['password'] = make_password(password)
-        return data
-
-    def create(self, validated_data):
-        validated_data.pop('password_confirmation', None)
-        user = User.objects.create(**validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
-
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password', 'password_confirmation')
+
+    def validate(self, data):
+        if data['password'] != data['password_confirmation']:
+            raise serializers.ValidationError({"password_confirmation": "Password fields didn't match."})
+        return data
+
+    def create(self, validated_data):
+        validated_data.pop('password_confirmation')
+        return User.objects.create_user(**validated_data)
+    
+    def update(self, instance, validated_data):
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.save()
+        return instance
+
+
 
 class CustomObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):

@@ -7,7 +7,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/products/', include('products.urls')),  
     path('api/auth/', include('jwt_auth.urls')),
-    path('api/watchlist/', include('watchlist.urls')),  # Include the watchlist URLs
+    path('api/watchlist/', include('watchlist.urls')),
+    path('api/', include('jwt_auth.urls')),
+  
 ]
 
 if settings.DEBUG:

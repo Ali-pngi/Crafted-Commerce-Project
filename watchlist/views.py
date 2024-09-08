@@ -16,6 +16,20 @@ class WatchlistView(APIView):
         ]
         return Response(serialized_data, status=status.HTTP_200_OK)
 
+    def post(self, request):
+        product_id = request.data.get('product')
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        watchlist_item, created = WatchlistItem.objects.get_or_create(user=request.user, product=product)
+
+        if created:
+            return Response({"message": "Added to watchlist"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"message": "Already in watchlist"}, status=status.HTTP_200_OK)
+
 class ToggleWatchlistView(APIView):
     permission_classes = [IsAuthenticated]
 
