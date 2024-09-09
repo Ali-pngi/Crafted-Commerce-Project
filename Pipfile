@@ -8,6 +8,7 @@ django = "*"
 djangorestframework-simplejwt = "*"
 dj-database-url = "*"
 environ = "*"
+django-on-heroku = "*"
 
 [dev-packages]
 
