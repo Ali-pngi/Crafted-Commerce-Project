@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 django = "*"
 djangorestframework-simplejwt = "*"
+dj-database-url = "*"
+environ = "*"
 
 [dev-packages]
 

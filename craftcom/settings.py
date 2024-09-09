@@ -1,7 +1,9 @@
 # settings.py
+import dj_database_url
 from pathlib import Path
 from datetime import timedelta
 import os
+from os import getenv
 from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
@@ -9,15 +11,18 @@ import cloudinary.api
 from cloudinary_storage.storage import MediaCloudinaryStorage
 from cloudinary_storage.storage import RawMediaCloudinaryStorage
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()  
+
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
+ALLOWED_ORIGINS = ['DB_URI']
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',  
 ]
@@ -71,10 +76,17 @@ TEMPLATES = [
 WSGI_APPLICATION = 'craftcom.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / "db.sqlite3",
-    }
+  'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': getenv('PGDATABASE'),
+    'USER': getenv('PGUSER'),
+    'PASSWORD': getenv('PGPASSWORD'),
+    'HOST': getenv('PGHOST'),
+    'PORT': getenv('PGPORT', 5432),
+    'OPTIONS': {
+      'sslmode': 'require',
+    },
+  }
 }
 
 MEDIA_URL = '/media/'
